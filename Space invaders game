@@ -1,6 +1,7 @@
 import pygame
 import random
 import math
+from pygame import mixer
 
 '#intialize the py game'
 pygame.init()
@@ -10,6 +11,10 @@ screen = pygame.display.set_mode((800, 600))
 
 '#Adding Background'
 background = pygame.image.load('background.png')
+
+'#Backgroung Music'
+mixer.music.load('background.wav')
+mixer.music.play(-1)
 
 '#Caption and Icon'
 pygame.display.set_caption('Space InvaderS')
@@ -70,7 +75,19 @@ def is_collision(enemyX, enemyY, bulletX, bulletY):
         return False
 
 
+
+
 score = 0
+font = pygame.font.Font('Haloha Free Trial.ttf', 32)
+
+textx = 10
+texty = 10
+
+
+def show_score(x, y):
+    scores = font.render("Score : " + str(score), True, (255, 0, 0))
+    screen.blit(scores, (x, y))
+
 
 '#Game Loop'
 running = True
@@ -91,6 +108,8 @@ while running:
                 player_change = 0.3
             if event.key == pygame.K_SPACE:
                 if bullet_state == 'ready':
+                    bullet_sound = mixer.Sound('laser.wav')
+                    bullet_sound.play()
                     bulletX = playerX
                     fire_bullet(bulletX, bulletY)
         if event.type == pygame.KEYUP:
@@ -117,10 +136,11 @@ while running:
         '#collision'
         collision = is_collision(enemyX[i], enemyY[i], bulletX, bulletY)
         if collision:
+            collision_sound = mixer.Sound('explosion.wav')
+            collision_sound.play()
             bulletY = 510
             bullet_state = 'ready'
             score += 1
-            print(score)
             enemyX[i] = random.randint(0, 736)
             enemyY[i] = random.randint(50, 150)
         enemy(enemyX[i], enemyY[i], i)
@@ -133,7 +153,6 @@ while running:
         fire_bullet(bulletX, bulletY)
         bulletY -= bulletY_change
 
-
     player(playerX, playerY)
-
+    show_score(textx, texty)
     pygame.display.update()
